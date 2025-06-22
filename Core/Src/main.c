@@ -226,8 +226,11 @@ int main(void)
 	MX_FATFS_Init();
 	/* USER CODE BEGIN 2 */
 
-	printf("\r\nProgram Start\r\n");
+	printf("\r\nProgram Start6\r\n");
 
+	HAL_GPIO_WritePin(GAINB0_GPIO_Port, GAINB0_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GAINB1_GPIO_Port, GAINB1_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GAINB2_GPIO_Port, GAINB2_Pin, GPIO_PIN_RESET);
 
 	/* USER CODE END 2 */
 
@@ -235,11 +238,78 @@ int main(void)
 	/* USER CODE BEGIN WHILE */
 	while (1)
 	{
-		/* USER CODE END WHILE */
-		HAL_GPIO_WritePin(RED_LED_GPIO_Port, RED_LED_Pin, GPIO_PIN_SET);
-		HAL_Delay(500);
+		printf("*\n");
+
 		HAL_GPIO_WritePin(RED_LED_GPIO_Port, RED_LED_Pin, GPIO_PIN_RESET);
 		HAL_Delay(500);
+		HAL_GPIO_WritePin(RED_LED_GPIO_Port, RED_LED_Pin, GPIO_PIN_SET);
+		HAL_Delay(500);
+		/*
+		HAL_GPIO_WritePin(GAINB0_GPIO_Port, GAINB0_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GAINB1_GPIO_Port, GAINB1_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GAINB2_GPIO_Port, GAINB2_Pin, GPIO_PIN_RESET);
+		HAL_Delay(500);
+		HAL_GPIO_WritePin(GAINB0_GPIO_Port, GAINB0_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GAINB1_GPIO_Port, GAINB1_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GAINB2_GPIO_Port, GAINB2_Pin, GPIO_PIN_RESET);
+		HAL_Delay(500);
+		HAL_GPIO_WritePin(GAINB0_GPIO_Port, GAINB0_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GAINB1_GPIO_Port, GAINB1_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GAINB2_GPIO_Port, GAINB2_Pin, GPIO_PIN_RESET);
+		HAL_Delay(500);
+		HAL_GPIO_WritePin(GAINB0_GPIO_Port, GAINB0_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GAINB1_GPIO_Port, GAINB1_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GAINB2_GPIO_Port, GAINB2_Pin, GPIO_PIN_RESET);
+		HAL_Delay(500);
+		HAL_GPIO_WritePin(GAINB0_GPIO_Port, GAINB0_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GAINB1_GPIO_Port, GAINB1_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GAINB2_GPIO_Port, GAINB2_Pin, GPIO_PIN_SET);
+		HAL_Delay(500);
+		HAL_GPIO_WritePin(GAINB0_GPIO_Port, GAINB0_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GAINB1_GPIO_Port, GAINB1_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GAINB2_GPIO_Port, GAINB2_Pin, GPIO_PIN_SET);
+		HAL_Delay(500);
+		HAL_GPIO_WritePin(GAINB0_GPIO_Port, GAINB0_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GAINB1_GPIO_Port, GAINB1_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GAINB2_GPIO_Port, GAINB2_Pin, GPIO_PIN_SET);
+		HAL_Delay(500);
+		HAL_GPIO_WritePin(GAINB0_GPIO_Port, GAINB0_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GAINB1_GPIO_Port, GAINB1_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GAINB2_GPIO_Port, GAINB2_Pin, GPIO_PIN_SET);
+		HAL_Delay(500);
+
+		HAL_GPIO_WritePin(OrangeLED_GPIO_Port, OrangeLED_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GAINA0_GPIO_Port, GAINA0_Pin, GPIO_PIN_RESET);
+		HAL_Delay(500);
+		HAL_GPIO_WritePin(RED_LED_GPIO_Port, RED_LED_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GAINA1_GPIO_Port, GAINA1_Pin, GPIO_PIN_RESET);
+		HAL_Delay(500);
+
+		HAL_GPIO_WritePin(OrangeLED_GPIO_Port, OrangeLED_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GAINA0_GPIO_Port, GAINA0_Pin, GPIO_PIN_SET);
+		HAL_Delay(500);
+		HAL_GPIO_WritePin(RED_LED_GPIO_Port, RED_LED_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GAINA1_GPIO_Port, GAINA1_Pin, GPIO_PIN_RESET);
+		HAL_Delay(500);
+
+		HAL_GPIO_WritePin(OrangeLED_GPIO_Port, OrangeLED_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GAINA0_GPIO_Port, GAINA0_Pin, GPIO_PIN_RESET);
+		HAL_Delay(500);
+		HAL_GPIO_WritePin(RED_LED_GPIO_Port, RED_LED_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GAINA1_GPIO_Port, GAINA1_Pin, GPIO_PIN_SET);
+		HAL_Delay(500);
+
+		HAL_GPIO_WritePin(OrangeLED_GPIO_Port, OrangeLED_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GAINA0_GPIO_Port, GAINA0_Pin, GPIO_PIN_SET);
+		HAL_Delay(500);
+		HAL_GPIO_WritePin(RED_LED_GPIO_Port, RED_LED_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GAINA1_GPIO_Port, GAINA1_Pin, GPIO_PIN_SET);
+		HAL_Delay(500);
+		 */
+		/* USER CODE END WHILE */
+
+
+
 		/* USER CODE BEGIN 3 */
 	}
 	/* USER CODE END 3 */
@@ -728,7 +798,7 @@ static void MX_GPIO_Init(void)
 	HAL_GPIO_WritePin(GPIOC, GAINB0_Pin|GAINB1_Pin|GAINB2_Pin, GPIO_PIN_RESET);
 
 	/*Configure GPIO pin Output Level */
-	HAL_GPIO_WritePin(RED_LED_GPIO_Port, RED_LED_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOB, RED_LED_Pin|OrangeLED_Pin, GPIO_PIN_RESET);
 
 	/*Configure GPIO pin : SD_Card_Detect_Pin */
 	GPIO_InitStruct.Pin = SD_Card_Detect_Pin;
@@ -763,12 +833,12 @@ static void MX_GPIO_Init(void)
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
 	HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-	/*Configure GPIO pin : RED_LED_Pin */
-	GPIO_InitStruct.Pin = RED_LED_Pin;
+	/*Configure GPIO pins : RED_LED_Pin OrangeLED_Pin */
+	GPIO_InitStruct.Pin = RED_LED_Pin|OrangeLED_Pin;
 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
 	GPIO_InitStruct.Pull = GPIO_NOPULL;
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-	HAL_GPIO_Init(RED_LED_GPIO_Port, &GPIO_InitStruct);
+	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
 	/* USER CODE BEGIN MX_GPIO_Init_2 */
 
