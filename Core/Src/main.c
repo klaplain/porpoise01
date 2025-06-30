@@ -228,11 +228,13 @@ int main(void)
 
 	printf("\r\nLooping forever\r\n");
 	for(;;){
+		HAL_GPIO_WritePin(RED_LED_GPIO_Port, RED_LED_Pin, GPIO_PIN_RESET);
+
 		do{
 			HAL_Status = read_from_raspi(SPI_input_buffer);
 		}
 		while (HAL_Status != HAL_OK);
-
+		HAL_GPIO_WritePin(RED_LED_GPIO_Port, RED_LED_Pin, GPIO_PIN_SET);
 		token = strtok((char *)SPI_input_buffer, delimiter);
 
 		printf("%s\r\n",token);
@@ -278,13 +280,6 @@ int main(void)
   /* USER CODE BEGIN WHILE */
 	while (1)
 	{
-		//printf("*\n");
-		//
-		HAL_GPIO_WritePin(RED_LED_GPIO_Port, RED_LED_Pin, GPIO_PIN_RESET);
-		HAL_Delay(500);
-		HAL_GPIO_WritePin(RED_LED_GPIO_Port, RED_LED_Pin, GPIO_PIN_SET);
-		HAL_Delay(500);
-
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -895,7 +890,7 @@ void directory_request_handler()
 	strcpy(full_path_name, "/");
 
 	result= get_SD_directory(full_path_name);
-	printf("%s", SD_Directory2);
+	//printf("%s", SD_Directory2);
 	strcat( SD_Directory2, "\f");
 
 	/* Send directory content to raspi */
@@ -1033,8 +1028,14 @@ void recording_request_handler(){
 	uint32_t millisecs_to_record = atoi(strtok(NULL, delimiter))*1000;
 	file_to_be_recorded = strtok(NULL, delimiter);
 
-	HAL_GPIO_WritePin(GPIOC, GAINA0_Pin, gain & 0xFF);
-	HAL_GPIO_WritePin(GPIOC, GAINA1_Pin, gain>>1 & 0xFF);
+	//HAL_GPIO_WritePin(GPIOC, GAINA0_Pin, gain & 0x01);      // Not setting gain for transducer preamp at this time
+	//HAL_GPIO_WritePin(GPIOC, GAINA1_Pin, gain>>1 & 0x01);
+
+	HAL_GPIO_WritePin(GPIOC, GAINB0_Pin, gain & 0x01);  // Set gain for onboard preamp
+	HAL_GPIO_WritePin(GPIOC, GAINB1_Pin, gain>>1 & 0x01);
+	HAL_GPIO_WritePin(GPIOC, GAINB2_Pin, gain>>2 & 0x01);
+
+
 
 	printf("Record: Sampling %3dkHz  Gain %1d   Duration %lumS  %s \r\n", sampling_frequency_kHz, gain, millisecs_to_record,file_to_be_recorded);
 
