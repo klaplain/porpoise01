@@ -17,7 +17,7 @@ BUFFER_SIZE = 4096
 filetransferbuffer = [0]*BUFFER_SIZE
 SD_Card_file_size_dict = {}                                             # Initialise/Empty dictionary.  We will need this dictionary for the SD card files later.  
 SD_status = ""                                                          # SD Card usage
-DebugFlag =0
+DebugFlag = False
     
 # Initialize SPI interface
 bus = 0                                                                 # We only have SPI bus 0 available to us on the Pi
@@ -58,19 +58,13 @@ def raspi_to_stm(datablock):                                            # Send a
     while GPIO.input(26) == GPIO.HIGH  :  pass                          # Wait until STM ACQ is Ready before sending datablock
     spi.writebytes(datablock)
     while GPIO.input(26) == GPIO.HIGH  :  pass                          # Wait until STM ACQ is Ready before returning
-    #print(datablock)
     return
     
 def send_command_to_stm(command_string):
     global DebugFlag
-    print(command_string)
     command=bytearray()
     command.extend(command_string.encode())
     command.extend([0]*(BUFFER_SIZE-len(command)))   
-    if DebugFlag ==1:
-        print("GOTOT")
-        print(command)
-        DebugFlag=0
     raspi_to_stm(command)
 	
 def directory(): 
@@ -92,11 +86,13 @@ def directory():
     
     directory_line=directory_line[1:-1]                                 # delete the SD card stats line and the last blank line
     
-    # the following lines allow us to break out the details of each entry but this is not used yet
-    number_of_file_entries=len(directory_line) 
-    for index in range(0,number_of_file_entries):                          # each of the next lines describes a file except for the last line which is always blank
+    for index in range(1,len(directory_line)):                          # each of the next lines describes a file except for the last 3 lines
         directory_line_items = directory_line[index].split("\t")            # now split out the filename, size, date and time
-    
+        if directory_line_items[0].find(".DAT")>0:
+            SD_Card_file_size_dict[directory_line_items[0]] = int(directory_line_items[1] )
+        else:
+            del directory_line[index]                                              # This isn't a valid file line
+  
     directory_line.sort(reverse=True)
     
     return directory_line                                               # Send the file directory
@@ -281,7 +277,7 @@ def raspi_directory():
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
-@app.route('/download/<filename>')
+
 def download (filename):
     full_filename="./download/"+filename
     return send_file(full_filename, as_attachment=True)
@@ -295,6 +291,7 @@ def home():
         elif button == "directory":
             directory()
         elif button == "transfer":
+            print("trying to transfer", len(SD_Card_file_size_dict) )
             if len(SD_Card_file_size_dict) != 0:
                 transfer(request.form["file"],request.form["hydrophoneArrayName"],request.form["projectName"],request.form["lat"],request.form["long"],request.form["gain"])
         elif button == "analyze":
