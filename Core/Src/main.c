@@ -389,7 +389,7 @@ static void MX_ADC1_Init(void)
   /** Common config
   */
   hadc1.Instance = ADC1;
-  hadc1.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV1;
+  hadc1.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV4;
   hadc1.Init.Resolution = ADC_RESOLUTION_16B;
   hadc1.Init.ScanConvMode = ADC_SCAN_DISABLE;
   hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
@@ -754,7 +754,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(Acq_Busy_GPIO_Port, Acq_Busy_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOE, RecordEnable_Pin|Acq_Busy_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOD, GAINA0_Pin|GAINA1_Pin, GPIO_PIN_RESET);
@@ -763,7 +763,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOC, GAINB0_Pin|GAINB1_Pin|GAINB2_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, RED_LED_Pin|OrangeLED_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, RED_LED_Pin|Orange_LED_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : SD_Card_Detect_Pin */
   GPIO_InitStruct.Pin = SD_Card_Detect_Pin;
@@ -771,18 +771,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   HAL_GPIO_Init(SD_Card_Detect_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : Record_Enable_Pin */
-  GPIO_InitStruct.Pin = Record_Enable_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
-  HAL_GPIO_Init(Record_Enable_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : Acq_Busy_Pin */
-  GPIO_InitStruct.Pin = Acq_Busy_Pin;
+  /*Configure GPIO pins : RecordEnable_Pin Acq_Busy_Pin */
+  GPIO_InitStruct.Pin = RecordEnable_Pin|Acq_Busy_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(Acq_Busy_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
   /*Configure GPIO pins : GAINA0_Pin GAINA1_Pin */
   GPIO_InitStruct.Pin = GAINA0_Pin|GAINA1_Pin;
@@ -798,12 +792,19 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : RED_LED_Pin OrangeLED_Pin */
-  GPIO_InitStruct.Pin = RED_LED_Pin|OrangeLED_Pin;
+  /*Configure GPIO pin : RED_LED_Pin */
+  GPIO_InitStruct.Pin = RED_LED_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+  HAL_GPIO_Init(RED_LED_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : Orange_LED_Pin */
+  GPIO_InitStruct.Pin = Orange_LED_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+  HAL_GPIO_Init(Orange_LED_GPIO_Port, &GPIO_InitStruct);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 
@@ -828,7 +829,7 @@ void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef* hadc)
 	adc_lower_status = BUFFER_FULL;
 	if(adc_upper_status == BUFFER_FULL)  // Overflow detect
 	{
-		HAL_GPIO_WritePin(RED_LED_GPIO_Port, RED_LED_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOB, Orange_LED_Pin, GPIO_PIN_SET);
 		ADC_overrun=1; //Set overrun flag
 	}
 }
@@ -838,7 +839,7 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 	adc_upper_status = BUFFER_FULL;
 	if(adc_lower_status == BUFFER_FULL)  // Overflow detect
 	{
-		HAL_GPIO_WritePin(RED_LED_GPIO_Port, RED_LED_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOB, Orange_LED_Pin, GPIO_PIN_SET);
 		ADC_overrun=1; //Set overrun flag
 	}
 	//
@@ -1035,7 +1036,7 @@ void recording_request_handler(){
 	HAL_GPIO_WritePin(GPIOC, GAINB1_Pin, gain>>1 & 0x01);
 	HAL_GPIO_WritePin(GPIOC, GAINB2_Pin, gain>>2 & 0x01);
 
-
+	HAL_GPIO_WritePin(GPIOB, Orange_LED_Pin, GPIO_PIN_RESET);  // Clear overrun LED
 
 	printf("Record: Sampling %3dkHz  Gain %1d   Duration %lumS  %s \r\n", sampling_frequency_kHz, gain, millisecs_to_record,file_to_be_recorded);
 
@@ -1056,13 +1057,14 @@ void recording_request_handler(){
 		adc_upper_status = BUFFER_EMPTY;
 		overrun_count=0;
 		max_save_time_ms=0;
-		HAL_GPIO_WritePin(RED_LED_GPIO_Port, RED_LED_Pin, GPIO_PIN_RESET);
+		//HAL_GPIO_WritePin(RED_LED_GPIO_Port, RED_LED_Pin, GPIO_PIN_RESET);
 		set_ADC_clock_prescalar(sampling_frequency_kHz);
 		HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc_buf, ADCBUFLEN); 	// Enable ADC DMA and add contents
 		end_acq_ms=uwTick+millisecs_to_record;
 		do{
 			if(adc_lower_status == BUFFER_FULL)
 			{
+				HAL_GPIO_WritePin(GPIOE, RecordEnable_Pin, GPIO_PIN_RESET);
 				start_time_ms=uwTick;
 				f_write(&SDFile, &adc_buf[0], ADCBUFLEN, (void *)&bytes_written);
 				ms_taken=uwTick-start_time_ms;
@@ -1085,6 +1087,7 @@ void recording_request_handler(){
 			}
 			if(adc_upper_status == BUFFER_FULL)
 			{
+				HAL_GPIO_WritePin(GPIOE, RecordEnable_Pin, GPIO_PIN_SET);
 				start_time_ms=uwTick;
 				f_write(&SDFile, &adc_buf[ADCBUFLEN/2], ADCBUFLEN, (void *)&bytes_written);
 				ms_taken=uwTick-start_time_ms;
