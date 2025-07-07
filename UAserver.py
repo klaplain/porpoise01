@@ -277,7 +277,7 @@ def raspi_directory():
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
-
+@app.route('/download/<filename>')
 def download (filename):
     full_filename="./download/"+filename
     return send_file(full_filename, as_attachment=True)
@@ -299,6 +299,7 @@ def home():
                  analyze(request.form["wavfile"])
         elif button == "download":
            if len(raspi_directory()) != 0:
+               print(request.form["wavfile"])
                return redirect(url_for('download',filename=request.form["wavfile"]))
         elif button == "delete":
             if len(SD_Card_file_size_dict) != 0:
