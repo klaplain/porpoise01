@@ -1,0 +1,15 @@
+(kicad_sch (version 20230121) (generator eeschema)
+
+  (uuid f35f65ca-f45d-435f-8b22-9be11927c0b7)
+
+  (paper "A4")
+
+  (lib_symbols
+  )
+
+
+  (text "PCM1808\nI2S audio" (at 134.62 102.87 0)
+    (effects (font (size 3 3) (thickness 0.6) bold) (justify left bottom))
+    (uuid f7023086-120d-4b9d-936f-0e8a75619d03)
+  )
+)

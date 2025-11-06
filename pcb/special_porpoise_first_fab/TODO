@@ -1,0 +1,10 @@
+* change regulator package to SMD
+* add connector SS labels to bottom
+* add polarizing feature to SS on programming connector
+* shift programming connector in from edge
+
+* 1mH on +/- 12V output
+* film cap on input
+
+* change GPIO for attenuator (?)
+* short J5 (?)
